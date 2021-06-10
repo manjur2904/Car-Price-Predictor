@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car-Price-Predictor</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhai+2:wght@500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="all">
+    <div class="head">
+      <h1>Do Predict The Car Price</h1>
+    </div>
+    <div class="forming">
+      <form action="">
+        <div class="form-main form-company">
+          <lebel><b>Select Company: </b></lebel>
+          <select id="company" name="company" required="1"
+            onchange="load_car_models(this.id, 'car_model')">
+            {% for company in companies %}
+            <option value="{{ company }}">{{company}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-main form-model">
+          <lebel><b>Select Model: </b></lebel>
+          <select id="car_model" name="car_model" required="1">
+          </select>
+        </div>
+        <div class="form-main form-year">
+          <lebel><b>Select Year of Purchase:</b></lebel>
+          <select id="year" name="year" required="1">
+            {% for year in years %}
+            <option value="{{ year }}">{{year}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-main form-fuel">
+          <lebel><b>Select Fuel Type:</b></lebel>
+          <select id="fuel_type" name="fuel_type" required="1">
+            {% for fuel in fuel_type %}
+            <option value="{{ fuel }}">{{fuel}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-main form-kms">
+          <h4>Enter Number of Kilometers travelled:</h4>
+          <input type="text" id="kilo_driven" name="kilo_driven"
+            placeholder="Enter no. of kilometers travelled">
+        </div>
+        <div class="form-main form-btn">
+          <button onclick="send_data()">Predict Price</button>
+        </div>
+        <div class="form-main form-result">
+          <h3><span id="prediction"></span></h3>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+  <script>
+    function load_car_models(main_id, car_model_id) {
+      var company = document.getElementById(main_id);
+      var car_model = document.getElementById(car_model_id);
+      car_model.value = "";
+      car_model.innerHTML = "";
+      {% for company in companies %}
+      if (company.value == "{{company}}") {
+        {% for model in car_models %}
+        {% if company in model %}
+        var newOption = document.createElement("option")
+        newOption.value = "{{model}}";
+        newOption.innerHTML = "{{model}}";
+        car_model.options.add(newOption);
+        {% endif %}
+        {% endfor %}
+      }
+      {% endfor %}
+
+    }
+
+    function form_handler(event) {
+      event.preventDefault();
+    }
+
+    function send_data() {
+      // subpress from default behaviour
+      document.querySelector('form').addEventListener('submit', form_handler);
+
+      // send and recive data to predict method
+      var fd = new FormData(document.querySelector('form'));
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/predict', true);
+
+      document.getElementById("prediction").innerHTML = "Wait! Predicting Price...";
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          document.getElementById("prediction").innerHTML = "Prediction: " + xhr.responseText;
+        }
+      }
+
+      xhr.onload = function () { };
+      xhr.send(fd);
+
+    }
+  </script>
+
+</body>
+</html>
