@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 import pickle
 
+# To run this app use -> python -m flask run
 app=Flask(__name__)
 car = pd.read_csv("Cleaned_Car_data.csv")
 
